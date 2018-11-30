@@ -6,13 +6,29 @@ output: pdf_document
 
 # Background Information
 
-## Similarity Graphs, Adjacency Matrices, and Laplacians
+## Graph Theory and Linear Algebra
+
+### Similarity Graphs
 
 Given a dataset $x_1,...,x_n$ and a measure of similarity $s_{ij}\geq0$ between all pairs of points $x_i$ and $x_j$ in the set, the goal of clustering is to divide observations into groups such that points in the same group are similar, and points in different groups are dissimilar. A good way of representing similarity between observations is through a **similarity graph**, notated as G=(V,E). Each vertex, $v_i\in V$, represents an observationin the dataset. Two vertices are connected by an edge when their similarity $s_{ij}$ exceeds a threshold value. An edge is weighted by $s_{ij}$; the higher the similarity, the higher the weight and vice-versa.
 
 Our clustering problem now is to find a separation of the similarity graph such that edges between different groups have low weights, and edges within the same group have high weights.
 
+### Adjacency Matrices
 
+An adjacency matrix is a numerical represenation of a similarity graph. In our case, we have a weighted adjacency matrix notated as $W=(w_{ij})_{i,j=1,..,n}$.  If $w_{ij}=0$, vertices $v_i$ and $v_j$ are not connected by an edge.
+
+```{r,echo=FALSE,include=FALSE}
+nodes<-read.csv("Dataset1-Media-Example-NODES.csv", header=T, as.is=T)
+links<-read.csv("Dataset1-Media-Example-EDGES.csv", header=T, as.is=T)
+library(igraph)
+net<-graph.data.frame(links, nodes, directed=F)
+plot(net,edge.arrow.size=1,vertex.size=20,vertex.color="pink",vertex.label.cex=0.6)
+as_adjacency_matrix(net, type = c("both", "upper", "lower"), attr = NULL,
+  edges = FALSE, names = TRUE, sparse = igraph_opt("sparsematrices"))
+```
+
+### Laplacians
 
 ## Spectral Clustering 
 
