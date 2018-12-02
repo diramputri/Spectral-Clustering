@@ -33,3 +33,47 @@ as_adjacency_matrix(net, type = c("both", "upper", "lower"), attr = NULL,
 ## Spectral Clustering 
 
 # Exercise 
+---
+title: "Spectral Clustering Practice"
+author: "Andira Putri"
+output: pdf_document
+---
+
+# 1. Background Information
+
+## 1.1 Graph Theory and Linear Algebra
+
+### Similarity Graphs
+
+Given a dataset $x_1,...,x_n$ and a measure of similarity $s_{ij}\geq0$ between all pairs of points $x_i$ and $x_j$ in the set, the goal of clustering is to divide observations into groups such that points in the same group are similar, and points in different groups are dissimilar. A good way of representing similarity between observations is through a **similarity graph**, notated as G=(V,E). Each vertex, $v_i\in V$, represents an observationin the dataset. Two vertices are connected by an edge when their similarity $s_{ij}$ exceeds a threshold value. An edge is weighted by $s_{ij}$; the higher the similarity, the higher the weight and vice-versa. Our clustering problem now is to find a separation of the similarity graph such that edges between different groups have low weights, and edges within the same group have high weights.
+
+An **adjacency matrix** is a numerical represenation of a similarity graph. In our case, we have a weighted adjacency matrix notated as $W=(w_{ij})_{i,j=1,..,n}$.  If $w_{ij}=0$, vertices $v_i$ and $v_j$ are not connected by an edge. An example of a similarity graph and its adjacency matrix is shown in Figure 1.
+
+![Similarity graph on the right and its corresponding weighted adjacancy matrix on the left.](graph.jpg)
+
+```{r network,echo=FALSE,include=FALSE}
+# playing around with network visualization tools
+nodes<-read.csv("Dataset1-Media-Example-NODES.csv", header=T, as.is=T)
+links<-read.csv("Dataset1-Media-Example-EDGES.csv", header=T, as.is=T)
+library(igraph)
+net<-graph.data.frame(links, nodes, directed=F)
+plot(net,edge.arrow.size=1,vertex.size=20,vertex.color="pink",vertex.label.cex=0.6)
+as_adjacency_matrix(net, type = c("both", "upper", "lower"), attr = NULL,
+  edges = FALSE, names = TRUE, sparse = igraph_opt("sparsematrices"))
+```
+
+There are several different types of similarity graphs. The types described below are commonly used for spectral clustering.
+
+$\epsilon$-Neighborhood Graph: We connect the observations whose pairwise distances are smaller than $\epsilon$. Distances between connected points cannot exceed $\epsilon$, so weighting the edges would not give more information about the data to the graph. For this reason, the $\epsilon$-neighborhood graph is considered an unweighted graph.
+
+K-Nearest Neighbor Graph: 
+
+The Fully Connected Graph: All vertices are connected with positive similarity to each other. All edges are weighted by $s_{ij}$. This type of graph is only useful if it represents local neigborhoods. A good example of a useful fully connected graph is the Gaussian similarity function, where a parameter $\sigma$ controls the width of the neighborhoods; the parameter has a similar role to $\epsilon$ in the first type of graph. 
+
+### Graph Laplacians
+
+## 1.2 Spectral Clustering 
+
+# Exercises 
+
+http://lasa.epfl.ch/teaching/lectures/ML_MSc_Advanced/Exercises/Ex_ML_SpectralClustering.pdf
