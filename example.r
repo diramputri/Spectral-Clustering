@@ -1,4 +1,4 @@
-# simulated data with mlbench package
+# generating data with mlbench package
 
 library(mlbench)
 set.seed(1)
@@ -8,15 +8,15 @@ plot(data)
 
 # ----------------------------------------------------------------------------------------------- #
 
-# regular function in R
+# creating a function in R
 
-## compute similarity matrix ##
+## compute similarity matrix using Gaussian/RBF kernel ##
 
-s <- function(x1, x2, alpha=1) {
-  exp(- alpha * norm(as.matrix(x1-x2), type="F"))
+s <- function(x1, x2, alpha=1) {     # the 's' function will define the Gaussian kernel
+  exp(- alpha * norm(as.matrix(x1-x2), type="F")) 
 }
 
-similarity <- function(data, similarity) {
+similarity <- function(data, similarity) {    # compute weighted similarities
   N <- nrow(data)
   S <- matrix(rep(NA,N^2), ncol=N)
   for(i in 1:N) {
@@ -30,22 +30,22 @@ similarity <- function(data, similarity) {
 S <- similarity(data, s)
 S[1:8,1:8]
 
-## affinity matrix ##
+## adjacency matrix ##
 
-affinity <- function(S, n.neighboors=2) {
+affinity <- function(S, n.neighbors=2) {
   N <- length(S[,1])
   
-  if (n.neighboors >= N) {  # fully connected
+  if (n.neighbors >= N) {  # fully connected
     A <- S
   } else {
     A <- matrix(rep(0,N^2), ncol=N)
     for(i in 1:N) { # for each line
       # only connect to those points with larger similarity 
-      best.similarities <- sort(S[i,], decreasing=TRUE)[1:n.neighboors]
+      best.similarities <- sort(S[i,], decreasing=TRUE)[1:n.neighbors]
       for (s in best.similarities) {
         j <- which(S[i,] == s)
         A[i,j] <- S[i,j]
-        A[j,i] <- S[i,j] # to make an undirected graph, ie, the matrix becomes symmetric
+        A[j,i] <- S[i,j] # to make an undirected graph, i.e., the matrix becomes symmetric
       }
     }
   }
@@ -65,6 +65,18 @@ D[1:8,1:8]
 L <- D - A
 round(L[1:12,1:12],1)
 
-# ----------------------------------------------------------------------------------------------- #
+## eigenvalues ##
 
-# using kernlab package
+"%^%" <- function(M, power)
+  with(eigen(M), vectors %*% (values^power * solve(vectors)))
+L <- diag(nrow(my.data)) - solve(D) %*% A  # simple Laplacian
+round(L[1:12,1:12],1)
+
+## clustering ##
+
+k   <- 2
+evL <- eigen(L, symmetric=TRUE)
+Z   <- evL$vectors[,(ncol(evL$vectors)-k+1):ncol(evL$vectors)]
+plot(Z, pch=20) # all 50 points of each cluster are on top of each other
+
+# ----------------------------------------------------------------------------------------------- #
